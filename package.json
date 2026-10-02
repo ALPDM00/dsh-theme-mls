@@ -1,0 +1,76 @@
+{
+  "name": "dsh-theme-mls",
+  "version": "0.1.0",
+  "description": "Marathon-inspired FUI + editorial glitch theme for deepseekHarness. Programmatic assets only; no Bungie/Marathon copyrighted material.",
+  "license": "MIT",
+  "private": false,
+  "main": "index.js",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "check": "node check.cjs",
+    "selftest": "node selftest.cjs",
+    "test": "node test/plugin.test.cjs",
+    "screenshots": "node scripts/capture-screenshots.cjs",
+    "verify:boot": "node scripts/verify-headless.cjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "client.js",
+    "index.js",
+    "cordis.patch.yml",
+    "assets/",
+    "docs/",
+    "screenshots.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "theme",
+    "fui",
+    "glitch",
+    "marathon"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ],
+      "platform": "web"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ALPDM00/dsh-theme-mls.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ALPDM00/dsh-theme-mls/issues"
+  },
+  "homepage": "https://github.com/ALPDM00/dsh-theme-mls#readme"
+}
