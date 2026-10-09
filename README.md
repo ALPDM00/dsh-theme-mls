@@ -14,6 +14,9 @@
 > mirrors — only the *plate* flips, the glyph ink is the same acid green and the
 > UI ink is the plate's opposite. In the light pair the accent is a **surface
 > and nothing else** — see "The accent is a surface, never a letterform".
+> The pair is chosen independently of the dot field itself: the field has its own
+> **背景动画** switch (off by default), and the pair stays where you put it while
+> it is off.
 
 > **Web vs. desktop**: the desktop edition of the same theme —
 > [`dsh-theme-mls-desktop`](https://github.com/ALPDM00/dsh-theme-mls-desktop) —
@@ -52,7 +55,7 @@ left behind.
 | ------- | --- | -------- | ------ |
 | Settings dialog | dialog opens | 5×5 tile mosaic wipes away in a fixed pseudo-random order | 0.5s |
 | Task board | `data-dsh-taskboard-active` flips on | **each of the five 选项卡** (待规划 / 待办 / 进行中 / 已完成 / 已失败) gets its own set, and all five run on one clock: the tab is an opaque slab carrying 4 reticles, each flashing for 0.1s → a 2px green frame arrives (1.20→1.36s) → the slab's 2×2 quadrants are lifted one at a time in order **1-2-4-3** (TL, TR, **BR**, BL at 1.50 / 1.58 / 1.66 / 1.74s), each taking its reticle with it → the frame leaves on the very frame the fourth one does (1.74→1.90s) | 1.90s (≤2s) |
-| Colour pair | the settings segment switches to another pair | the **settings mosaic itself is replayed over the palette**: the same fixed order, the same 3-tile head, the same 0.341s total, each square arriving whole — and the colour pair changes underneath as it plays. The tiles are **squares** (the side comes off the viewport's short edge, so a 1574×900 window gets 9×5 = 45 tiles of 174.9×180, not the panel's 315×180 slivers), which makes the beats 8.12ms instead of the panel's 15.5ms. The pre-switch snapshot stays pinned at opacity 1, so every square the mosaic has not reached yet still shows the **old** colours; only the squares that have turned show the new ones. Runs through View Transitions (which freezes the canvas field for those 0.341s), and the root group's own UA animation is killed so the reveal's length is the only clock. Only fires when the *pair* actually changes — 关闭动画 leaves the palette alone and switches instantly | 0.341s |
+| Colour pair | the settings segment switches to another pair | the **settings mosaic itself is replayed over the palette**: the same fixed order, the same 3-tile head, the same 0.341s total, each square arriving whole — and the colour pair changes underneath as it plays. The tiles are **squares** (the side comes off the viewport's short edge, so a 1574×900 window gets 9×5 = 45 tiles of 174.9×180, not the panel's 315×180 slivers), which makes the beats 8.12ms instead of the panel's 15.5ms. The pre-switch snapshot stays pinned at opacity 1, so every square the mosaic has not reached yet still shows the **old** colours; only the squares that have turned show the new ones. Runs through View Transitions (which freezes the canvas field for those 0.341s), and the root group's own UA animation is killed so the reveal's length is the only clock. Only fires when the *pair* actually changes — the 背景动画 switch leaves the palette alone and switches instantly | 0.341s |
 
 The choreography is the reference file's, ported from the card onto the column
 (see `docs/design-language.md` §8.2).
@@ -214,12 +217,25 @@ Both tokens are also used as **fills** (the trajectory timeline bars use
 flipping them to a text-only variable is a design decision rather than a bug fix.
 
 
-Choosing a native tab hands the content column straight back to DSH. Options:
-关闭动画 / 主白 + 绿 / 主黑 + 绿, plus 点阵密度 (grid px) and 呼吸速度. 关闭动画 only stops the field — the colour pair (and therefore the UI) stays where it is.
+## Settings: 主题设置
+
+The settings dialog gets one nav cell of ours; choosing it covers the content
+column with the pane. Two **independent** controls, plus two field-only knobs:
+
+| Control | Semantics |
+| ------- | --------- |
+| **背景动画** switch | its own switch, **OFF by default** — the dot field is opt-in. It never touches the palette: stopping the field leaves the colour pair (and therefore the whole UI) exactly where it is |
+| **主白 + 绿 / 主黑 + 绿** | a radio group: exactly one of the two is always chosen, and it changes the palette whether or not the field is drawn. Picking the other pair replays the 0.341s mosaic pour over the palette |
+| 点阵密度 (grid px) / 呼吸速度 | describe the field only, so they dim (and go `disabled`) while it is off — their values are kept for the next time it is switched on |
+
 All of it is persisted under the `dsh-theme-marathon.bg.v1` localStorage key —
 the key keeps its historical `marathon` spelling on purpose so this web edition
 and [`dsh-theme-mls-desktop`](https://github.com/ALPDM00/dsh-theme-mls-desktop)
-share one settings store and moving between them keeps your palette.
+share one settings store and moving between them keeps your palette. The stored
+shape was `{mode, scheme, cell, speed}` before 0.2.0 and is `{anim, scheme,
+cell, speed}` now; the old one is migrated on read — `mode: off` becomes
+`anim: false` with its `scheme` kept, `mode: light|dark|green` becomes
+`anim: true` plus that pair.
 
 ### Both halves of opening it are event-driven
 
